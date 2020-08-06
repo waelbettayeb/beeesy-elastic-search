@@ -1,0 +1,45 @@
+version: "3"
+services:
+  elasticsearch:
+    container_name: "elasticsearch"
+    image: elastic/elasticsearch:7.8.1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ./esdata:/usr/share/elasticsearch/data
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx2048m"
+
+  # kibana:
+  #   container_name: "kibana"
+  #   image: kibana:7.8.1
+  #   ports:
+  #     - 5601:5601
+  #   depends_on:
+  #     - elasticsearch
+
+  appsearch:
+    container_name: "appsearch"
+    image: docker.elastic.co/app-search/app-search:7.6.2
+    environment:
+      - "elasticsearch.host=http://elasticsearch:9200"
+      - "allow_es_settings_modification=true"
+      - "JAVA_OPTS=-Xms512m -Xmx2048m"
+    ports:
+      - 3002:3002
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    container_name: "logstash"
+    image: elastic/logstash:7.8.1
+    ports:
+      - 9600:9600
+    volumes:
+      # - ./logstach:/usr/share/logstash
+      - ./logstash/config:/usr/share/logstash/config
+    depends_on:
+      - elasticsearch
+      - postgres
