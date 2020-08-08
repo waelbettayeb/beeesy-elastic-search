@@ -40,6 +40,11 @@ services:
     volumes:
       # - ./logstach:/usr/share/logstash
       - ./logstash/config:/usr/share/logstash/config
+      # - ./logstash/logstash-core/lib/jars/postgresql-42.2.14:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.2.14
     depends_on:
       - elasticsearch
-      - postgres
+      - appsearch
+networks:
+  default:
+    external:
+      name: bee-project-api_default
